@@ -1,0 +1,1 @@
+{{ Html::button($title, $href, $icon, array_merge(['btn', 'btn-lg', 'btn-2d'], $classes), $attributes) }}

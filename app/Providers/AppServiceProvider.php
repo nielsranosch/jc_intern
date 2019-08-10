@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         // Buttons
         \Html::component('button', 'components.button.btn', ['title', 'href', 'icon', 'classes' => [], 'attributes' => []]);
         \Html::component('addButton', 'components.button.btn', ['title', 'href', 'classes' => [], 'attributes' => [], 'icon' => 'plus']);
+        \Html::component('button2d', 'components.button.button', ['title', 'href', 'icon', 'classes' => [], 'attributes' => []]);
         \Form::component('submitInput2d', 'components.button.submit', ['title' => trans('form.save'), 'attributes' => []]);
         \Form::component('submitDelete2d', 'components.button.delete', ['title' => trans('form.delete'), 'attributes' => []]);
 
