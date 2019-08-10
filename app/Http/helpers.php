@@ -130,12 +130,12 @@ const ATOMIC_LOCK_STRING = "___ATOMIC_LOCK___";
  *
  * @param string $cache_key key, under which our value is stored
  * @param callable $generate_new_result function to generate a new value
- * @param \DateTime|float|int $cache_expiry_time in minutes, defaults to 60
- * @param \DateTime|float|int $atomic_lock_time in minutes, should be at least as long as an execution of $generate_new_result, defaults to 1
+ * @param \DateTime|float|int $cache_expiry_time in MINUTES, defaults to 60
+ * @param \DateTime|float|int $atomic_lock_time in SECONDS, should be at least as long as an execution of $generate_new_result, defaults to 60
  * @return mixed the cached or newly generated value
  */
-function cache_atomic_lock_provider($cache_key, callable $generate_new_result, $cache_expiry_time = 60, $atomic_lock_time = 1) {
-    if (config("cacher.disable") === "false" && !\Cache::add($cache_key, ATOMIC_LOCK_STRING, $atomic_lock_time)) {
+function cache_atomic_lock_provider($cache_key, callable $generate_new_result, $cache_expiry_time = 60, $atomic_lock_time = 60) {
+    if (!\Cache::add($cache_key, ATOMIC_LOCK_STRING, $atomic_lock_time) && config("cacher.disable") === "false") {
         $result = \Cache::get($cache_key);
         if (ATOMIC_LOCK_STRING === $result) {
             // Cache has been locked by another instance
@@ -143,6 +143,11 @@ function cache_atomic_lock_provider($cache_key, callable $generate_new_result, $
         }
     } else {
         // Cache was empty, we have the atomic lock on the cache.
+
+        if (is_numeric($cache_expiry_time)) {
+            // Since Laravel 5.8, Cache functions expect seconds. However, minutes are more practical for us.
+            $cache_expiry_time = $cache_expiry_time * 60;
+        }
         try {
             $result = $generate_new_result($cache_key, $cache_expiry_time, $atomic_lock_time);
             \Cache::put($cache_key, $result, $cache_expiry_time);
