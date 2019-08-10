@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         \Html::component('button', 'components.button.btn', ['title', 'href', 'icon', 'classes' => [], 'attributes' => []]);
         \Html::component('addButton', 'components.button.btn', ['title', 'href', 'classes' => [], 'attributes' => [], 'icon' => 'plus']);
         \Form::component('submitInput2d', 'components.button.submit', ['title' => trans('form.save'), 'attributes' => []]);
+        \Form::component('submitDelete2d', 'components.button.delete', ['title' => trans('form.delete'), 'attributes' => []]);
 
         // Versioned form of Html::style and Html::script for cache busting, which use timestamp of lastmodified as GET-Parameter
         \Html::component('styleV', 'components.html.style-versioned', ['filename']);

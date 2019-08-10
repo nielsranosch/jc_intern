@@ -37,6 +37,7 @@ return [
     'mandatory'     => 'verpflichtend',
     'weight'        => 'Gewichtung',
     'save'          => 'Speichern',
+    'delete'        => 'L&ouml;schen', 
     'help_date'     => 'Bitte ein Datum angeben.',
     'help_dateTime' => 'Bitte ein Datum und eine Uhrzeit angeben, z.B. "13.04.2016 19:30".',
     'repeat'        => 'Termin wiederholen',
