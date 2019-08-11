@@ -20,7 +20,8 @@
         "ext-intl": "*",
         "laravel/tinker": "^1.0",
         "doctrine/dbal": "^2.8",
-        "webklex/laravel-imap": "^1.4"
+        "webklex/laravel-imap": "^1.4",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
