@@ -9,6 +9,7 @@ use App\Models\Gig;
 use App\Models\Semester;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
@@ -32,7 +33,7 @@ class HomeController extends Controller
      * @return mixed
      */
     private function eventQueryBuild($event_class, String $table_name, Carbon $reference_date, $user, $limit = 3) {
-        $singular = str_singular($table_name);
+        $singular = Str::singular($table_name);
 
         $upcoming = $event_class::where('end', '>', $reference_date)->orderBy('start')->limit($limit);
 
@@ -55,7 +56,7 @@ class HomeController extends Controller
      * @return mixed
      */
     private function eventQueryHideByAttendance($query, String $table_name, int $attendance, bool $hide_if_null = false) {
-        $singular = str_singular($table_name);
+        $singular = Str::singular($table_name);
 
         //TODO: Nicer query building.
         return $query->where(function ($q) use ($singular, $attendance, $hide_if_null) {
@@ -75,7 +76,7 @@ class HomeController extends Controller
      * @return mixed
      */
     private function eventQueryShowByAttendance($query, String $table_name, array $attendances) {
-        $singular = str_singular($table_name);
+        $singular = Str::singular($table_name);
 
         //TODO: Nicer query building.
         $query = $query->where (function($q) use ($singular, $attendances) {

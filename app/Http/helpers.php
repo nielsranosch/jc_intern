@@ -3,6 +3,9 @@
  * Some custom helper functions
  */
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+
 
 /**
  * If $value is in array, remove it, otherwise add it.
@@ -17,7 +20,7 @@ function array_xor_value(array $array, $value, bool $strict = true) {
     if (false === $position) {
         $array[] = $value;
     } else {
-        $array = array_except($array, $position);
+        $array = Arr::except($array, $position);
     }
     return $array;
 }
@@ -207,7 +210,7 @@ function generate_calendar_url($user, $prefix = null, $date_types = null) {
         $result .= $prefix . \Config::get('app.domain');
     }
 
-    $req_key = str_random(10);
+    $req_key = Str::random(10);
     $parameters = [
         'user_id' => $user->pseudo_id,
         'key' => generate_calendar_password_hash($user, $req_key, $date_types),
