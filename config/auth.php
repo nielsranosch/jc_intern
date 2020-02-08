@@ -45,6 +45,10 @@ return [
             'driver' => 'token',
             'provider' => 'users',
         ],
+        'calendarSync' => [
+            'driver' => 'calendarSync',
+            'provider' => 'users',
+        ]
     ],
 
     /*

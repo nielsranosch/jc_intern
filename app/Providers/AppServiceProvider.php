@@ -43,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
 
+        //TODO: move this to a dedicated class
         \Validator::extend('custom_complexity', function($attribute, $value, $parameters, $validator) {
             /**
              * Function to check if a password satisfies a required 'complexity level'. Two things affect the complexity level: length and types of characters used

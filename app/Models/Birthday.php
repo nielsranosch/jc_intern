@@ -4,22 +4,24 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use MaddHatter\LaravelFullcalendar\Event;
 
-class Birthday implements Event {
+class Birthday extends Model implements Event {
     use Date;
+
+    // This is for carbon dates.
+    protected $dates = ['start', 'end'];
 
     protected $calendar_options = [
         'className' => 'event-birthday'
     ];
 
-    private $title;
-    private $start;
-    private $end;
+    protected $title;
+    protected $start;
+    protected $end;
 
-    public $description = '';
-
-    private $user;
+    protected $user;
 
     public function __construct(User $user = null) {
         $this->title = trans('form.birthday') . " " . $user->first_name . ' ' . $user->last_name;
@@ -59,6 +61,22 @@ class Birthday implements Event {
         return $this->user;
     }
 
+    public function getIdAttribute() {
+        return $this->user->id;
+    }
+
+    public function getDescriptionAttribute() {
+        return '';
+    }
+
+    public function getUpdatedAtAttribute() {
+        return $this->user->updated_at;
+    }
+
+    public function getCreatedAtAttribute() {
+        return $this->user->created_at;
+    }
+
     /**
      * Is it an all day event?
      *
@@ -91,12 +109,12 @@ class Birthday implements Event {
      *
      * @return Collection
      */
-    public static function all() {
+    public static function all($columns = ['*']) {
         $collection = new Collection();
         $users = User::all();
 
         foreach ($users as $user) {
-            if (isset($user->birthday)) {
+            if (!empty($user->birthday)) {
                 $collection->add(new Birthday($user));
             }
         }

@@ -80,7 +80,6 @@ class User extends Authenticatable {
         'first_name',
         'last_name',
         'email',
-        'password',
         'birthday',
         'phone',
         'address_street',
@@ -89,6 +88,7 @@ class User extends Authenticatable {
         'sheets_deposit_returned',
         'voice_id',
         'last_echo',
+        'share_private_data'
     ];
 
     /**
@@ -128,6 +128,7 @@ class User extends Authenticatable {
      * @var array
      */
     protected  $admin_areas = [
+        'private_data' => 'can_always_see_private_data',
         'rehearsal' => 'can_plan_rehearsal',
         'gig'       => 'can_plan_gig',
         'sheet'     => 'can_organise_sheets',
@@ -135,6 +136,7 @@ class User extends Authenticatable {
     ];
 
     private $is_admin = [
+        'private_data' => null,
         'rehearsal' => null,
         'gig'       => null,
         'sheet'     => null,
@@ -198,11 +200,31 @@ class User extends Authenticatable {
     }
 
     public function getLastNameAttribute($value) {
-        return ucfirst($value);
+        return $this->parseSemiPrivateString(ucfirst($value));
     }
 
     public function getBirthdayAttribute($value) {
-        return $value;
+        return $this->parsePrivateData($value, null);
+    }
+
+    public function getEmailAttribute($value) {
+        return $this->parsePrivateData($value);
+    }
+
+    public function getPhoneAttribute($value) {
+        return $this->parsePrivateData($value);
+    }
+
+    public function getAddressStreetAttribute($value) {
+        return $this->parsePrivateData($value);
+    }
+
+    public function getAddressZipAttribute($value) {
+        return $this->parsePrivateData($value);
+    }
+
+    public function getAddressCityAttribute($value) {
+        return $this->parsePrivateData($value);
     }
 
     /**
@@ -445,6 +467,33 @@ class User extends Authenticatable {
                 self::$all_current_users[$shift] = self::with($eager_load_relations)->currentAndFuture($shift_for_transition_period)->get($columns);
             }
             return self::$all_current_users[$shift];
+        }
+    }
+
+    public function isPrivateDataVisible($accessing_user = null) {
+        if ($accessing_user === null) {
+            if (\Auth::check()) {
+                $accessing_user = \Auth::user();
+            } else {
+                return false;
+            }
+        }
+        return $accessing_user->isAdmin('private_data') || $this->id === $accessing_user->id || $this->share_private_data;
+    }
+
+    protected function parsePrivateData($value, $default = '') {
+        if ($this->isPrivateDataVisible()) {
+            return $value;
+        } else {
+            return $default;
+        }
+    }
+
+    protected function parseSemiPrivateString($value, $length = 1) {
+        if ($this->isPrivateDataVisible()) {
+            return $value;
+        } else {
+            return str_shorten($value, $length, '.');
         }
     }
 

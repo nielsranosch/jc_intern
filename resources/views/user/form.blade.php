@@ -37,7 +37,7 @@
                     {!! Form::textInput2d('password', $random_password) !!}
                 @else
                     {!! Form::passwordInput2d('password') !!}
-                    @if(isset($user))
+                    @if(isset($user) && $user->id === Auth::user()->id)
                         {!! Form::passwordInput2d('password_confirmation') !!}
                     @endif
                 @endif
@@ -47,6 +47,17 @@
                 @if(isset($random_password))
                     <p>{{ trans('user.generated_password', ['password' => $random_password]) }}</p>
                 @endif
+            </div>
+            @if(isset($user) && Auth::user()->id === $user->id)
+                <div class="col-xs-12 col-md-6">
+                    <p>{{ trans('user.share_private_data_text') }}</p>
+                    <p>{{ trans('user.share_private_data_prompt') }}</p>
+                    {!! Form::radioInput2d('share_private_data', trans('user.hide_private_data'), 0, !$user->share_private_data) !!}
+                    {!! Form::radioInput2d('share_private_data', trans('user.show_private_data'), 1, $user->share_private_data) !!}
+                </div>
+            @endif
+            <div class="clearfix"></div>
+            <div class="col-xs-12 col-md-6">
                 <span class="center-block">
                     {!! Form::submitInput2d() !!}
                 </span>

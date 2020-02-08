@@ -27,5 +27,9 @@ return [
     'no_voice'      => 'Keine Stimme',
     'update_failed' => 'Konnte Nutzerdaten nicht speichern',
     'semester_update_success' => 'Erfolgreich zurückgemeldet!',
-    'edit'          => 'Nutzerdaten ändern'
+    'edit'          => 'Nutzerdaten ändern',
+    'hide_private_data' => '... nur Vorständen anzeigen',
+    'show_private_data' => '... allen Chormitgliedern anzeigen',
+    'share_private_data_text' => 'Du hast die Möglichkeit deine privaten Daten (voller Name, Adresse, E-Mail Adresse, Telefonnummer und Geburtsdatum) vor anderen Chormitgliedern zu verbergen. Dem Vorstand und dem Chorleiter werden immer alle Daten angezeigt.',
+    'share_private_data_prompt' => 'Meine persönlichen Daten ...'
 ];
