@@ -22,6 +22,7 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         CheckForMaintenanceMode::class,
+        \App\Http\Middleware\CacheControl::class
     ];
 
     /**
