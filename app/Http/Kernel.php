@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\DebugBar;
+use App\Http\Middleware\PrepareDebugBar;
 use App\Http\Middleware\AuthenticateCalendarSync;
 use App\Http\Middleware\SemesterValid;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
@@ -38,6 +40,7 @@ class Kernel extends HttpKernel
             StartSession::class,
             ShareErrorsFromSession::class,
             Middleware\VerifyCsrfToken::class,
+            PrepareDebugBar::class,
         ],
 
         'api' => [
@@ -64,6 +67,7 @@ class Kernel extends HttpKernel
         'adminOrOwn' => Middleware\AdminOrOwnMiddleware::class,
         'admin' => Middleware\AdminMiddleware::class,
         'semesterValid' => SemesterValid::class,
+        'debugBar' => DebugBar::class,
         'auth.calendar' => AuthenticateCalendarSync::class,
     ];
 }
