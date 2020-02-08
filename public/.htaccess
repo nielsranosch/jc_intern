@@ -18,3 +18,20 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
+
+<IfModule mod_env.c>
+    # Add security and privacy related headers
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Robots-Tag "none"
+    Header set X-Download-Options "noopen"
+    Header set X-Permitted-Cross-Domain-Policies "none"
+    Header set Referrer-Policy "no-referrer"
+    Header set Strict-Transport-Security "max-age=15552000; includeSubDomains"
+    SetEnv modHeadersAvailable true
+</IfModule>
+
+# Add cache control for static resources
+<FilesMatch "\.(css|js|svg|gif)$">
+    Header set Cache-Control "max-age=15778463"
+</FilesMatch>

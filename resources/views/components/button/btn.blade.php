@@ -5,6 +5,6 @@
             echo $key . '="' . $attribute . '" ';
         }
         ?>>
-    <i class="fa fa-plus"></i>
+    <i class="fa fa-{{ $icon }}"></i>
     <span class="title">&nbsp;{{ $title }}</span>
 </a>

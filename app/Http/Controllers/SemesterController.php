@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Semester;
 use Carbon\Carbon;
 use Config;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class SemesterController extends Controller
 {
@@ -23,7 +25,7 @@ class SemesterController extends Controller
      * @param Carbon $date
      * @return Semester
      */
-    public function getSemester(Carbon $date) {
+    public static function getSemester(Carbon $date) {
         $semester = Semester::where(
             'start', '<=', $date->toDateString()
         )->where(
@@ -31,8 +33,8 @@ class SemesterController extends Controller
         )->first();
 
         if (null === $semester) {
-            $this->generateNewSemester();
-            return $this->getSemester($date);
+            self::generateNewSemester();
+            return self::getSemester($date);
         }
 
         return $semester;
@@ -44,17 +46,36 @@ class SemesterController extends Controller
      * @param Request $request
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function generateNewSemester(Request $request = null) {
+    public static function generateNewSemester(Request $request = null) {
         // Start to add new semester object.
         $newSemester = new Semester();
 
         // Get start of new Semester by adding one day to end of the last one.
-        $lastSemester = Semester::last();
+        try {
+            $lastSemester = Semester::last();
+        } catch (ModelNotFoundException $e) {
+            // No valid semester in database, create a fake one
+            $lastSemester = new \stdClass();
+            $lastSemester->end = Carbon::now()->startOfMonth(); // avoid month overlapping
+
+            // Avoid semester start in the future
+            if (Carbon::now()->month < min(config('semester.summer_term_start'), config('semester.winter_term_start'))) {
+                // Early in the year
+                $lastSemester->end->month(max(config('semester.summer_term_start'), config('semester.winter_term_start')) - 1);
+                $lastSemester->end->subYear();
+            } else if (Carbon::now()->month >= max(config('semester.summer_term_start'), config('semester.winter_term_start'))) {
+                // Late in the year
+                $lastSemester->end->month(max(config('semester.summer_term_start'), config('semester.winter_term_start')) - 1);
+            } else {
+                $lastSemester->end->month(min(config('semester.summer_term_start'), config('semester.winter_term_start')) - 1);
+            }
+            $lastSemester->end->endOfMonth();
+        }
         // Add one day, but make sure it's the start of a month.
-        $newSemester->start = (new Carbon($lastSemester->end))->addDay()->startOfMonth();
+        $newSemester->start = $lastSemester->end->copy()->addDay()->startOfMonth();
 
         // Calculate end of this semester later on.
-        $newSemester->end = new Carbon($newSemester->start);
+        $newSemester->end = $newSemester->start->copy();
 
         if (!Config::has('semester')) {
             if (null !== $request) {
@@ -72,17 +93,17 @@ class SemesterController extends Controller
         if ($newSemester->start->month == Config::get('semester.summer_term_start')) {
             // Do we have summer term start?
             // Calculate ending month of semester
-            $newSemester->end->month(Config::get('semester.winter_term_start') - 1);
+            $newSemester->end = $newSemester->end->month(Config::get('semester.winter_term_start') - 1);
             
             // Append last two digits of semester's year to summer term name.
             $newSemester->label = Config::get('semester.summer_term_name') . ' ' . $newSemester->start->format('y');
         } else if ($newSemester->start->month == Config::get('semester.winter_term_start')) {
             // Do we have winter term start?
             // Calculate ending month of semester
-            $newSemester->end->month(Config::get('semester.summer_term_start') - 1);
+            $newSemester->end = $newSemester->end->month(Config::get('semester.summer_term_start') - 1);
             // And add one to the year for winter term if start of summer term is not first of January.
             if (Config::get('semester.summer_term_start') != '01') {
-                $newSemester->end->addYear();
+                $newSemester->end = $newSemester->end->addYear();
             }
             // Append last two digits of semester's start and end year to winter term name.
             $newSemester->label = Config::get('semester.winter_term_name') . ' ' .  $newSemester->start->format('y') . '/' .  $newSemester->end->format('y');
@@ -95,7 +116,7 @@ class SemesterController extends Controller
                     return back()->withErrors(trans('semester.wrong_start'));
                 }
             } else {
-                return false;
+                throw new \ErrorException('New Semester could not be generated.');
             }
         }
         // End calculation of end date.

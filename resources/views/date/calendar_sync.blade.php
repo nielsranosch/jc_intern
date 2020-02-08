@@ -22,7 +22,7 @@
 
     <div id="calendar_sync_end">
         <p id="calendar_sync_text">loading</p>
-        <a id="calendar_sync_link" target="_blank" href="/">loading</a>
+        <a id="calendar_sync_link" target="_blank" rel="noopener noreferrer" href="/">loading</a>
         <p id="calendar_sync_conclusion">{{ trans('date.calendar_sync_conclusion') }}</p>
     </div>
 

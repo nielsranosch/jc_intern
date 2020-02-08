@@ -4,21 +4,30 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "type": "project",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/rayblair06/laravel-fullcalendar"
+        }
+    ],
     "require": {
-        "php": "7.1.*",
-        "laravel/framework": "5.7.*",
-        "laravelcollective/html": "5.7.*",
+        "php": "7.3.*",
+        "laravel/framework": "6.0.*",
+        "laravelcollective/html": "6.0.*",
         "maddhatter/laravel-fullcalendar": "^1.3",
         "eluceo/ical": "0.*",
         "barryvdh/laravel-debugbar": "^3.0",
         "barryvdh/laravel-ide-helper": "^2.5.0",
-        "greggilbert/recaptcha": "^2.2",
+        "biscolab/laravel-recaptcha": "^4.0",
         "ext-mbstring": "*",
         "guzzlehttp/guzzle": "^6.0",
         "ext-json": "*",
         "fideloper/proxy": "^4.0",
         "ext-intl": "*",
-        "doctrine/dbal": "^2.8"
+        "laravel/tinker": "^1.0",
+        "doctrine/dbal": "^2.8",
+        "webklex/laravel-imap": "^1.4",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

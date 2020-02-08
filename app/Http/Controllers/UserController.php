@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Str;
 
 class UserController extends Controller {
     protected $validation = [
@@ -78,11 +79,11 @@ class UserController extends Controller {
         $voice_choice[1] = trans('user.no_voice');
 
         // Generate a random password until one satisfies our conditions
-        $random_password = str_random(10);
+        $random_password = Str::random(10);
         $v = \Validator::make(['password' => $random_password], $this->password_validation);
         for ($i = 0; $i < 30; $i++) { // max 30 times just in case
             if (!$v->passes()) {
-                $random_password = str_random(10);
+                $random_password = Str::random(10);
                 $v = \Validator::make(['password' => $random_password], $this->password_validation);
             } else {
                 break;
@@ -114,12 +115,12 @@ class UserController extends Controller {
             ]
         );
 
-        $hashed_password = bcrypt(array_pull($data, 'password'));
-        $pseudo_password = str_random(222);
+        $data['password'] = bcrypt(array_pull($data, 'password'));
+        $pseudo_password = Str::random(222);
 
         // Generate a pseudo_id which is unique
         for ($length = 20; $length <= 255; $length++) {
-            $pseudo_id = str_random($length);
+            $pseudo_id = Str::random($length);
             if (User::where('pseudo_id', '=', $pseudo_id)->count() === 0) {
                 // This is virtually guaranteed to succeed during the first loop
                 break;
@@ -321,11 +322,11 @@ class UserController extends Controller {
     /*public function resetAllPasswords() {
         $users = User::all(['*'], true);
         foreach ($users as $user) {
-            $random_password = str_random(10);
+            $random_password = Str::random(10);
             $v = \Validator::make(['password' => $random_password], $this->password_validation);
             for ($i = 0; $i < 30; $i++) { // max 30 times just in case
                 if (!$v->passes()) {
-                    $random_password = str_random(10);
+                    $random_password = Str::random(10);
                     $v = \Validator::make(['password' => $random_password], $this->password_validation);
                 } else {
                     break;

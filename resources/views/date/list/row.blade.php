@@ -15,7 +15,7 @@
 
                 @if($date->hasPlace())
                     <p class="place">
-                        <a href="{{'https://www.google.com/maps/search/'}}@urlescape($date->place)/" title="{{ trans('date.address_search') }}" target="_blank" class="pull-right text-large">
+                        <a href="{{'https://www.google.com/maps/search/'}}@urlescape($date->place)/" title="{{ trans('date.address_search') }}" rel="noopener noreferrer"  target="_blank" class="pull-right text-large">
                             {{ trans('date.goto_maps') }} <i class="far fa-map"></i>
                         </a>
                     </p>

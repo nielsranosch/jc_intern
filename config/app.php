@@ -100,6 +100,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Faker Locale
+    |--------------------------------------------------------------------------
+    |
+    | This locale will be used by the Faker PHP library when generating fake
+    | data for your database seeds. For example, this will be used to get
+    | localized telephone numbers, street address information and more.
+    |
+    */
+
+    'faker_locale' => 'de_DE',
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |
@@ -167,7 +180,8 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         MaddHatter\LaravelFullcalendar\ServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,  // also loaded in production :-(
-        Greggilbert\Recaptcha\RecaptchaServiceProvider::class
+        Biscolab\ReCaptcha\ReCaptchaServiceProvider::class,
+        Laravel\Tinker\TinkerServiceProvider::class
     ],
 
     /*
@@ -184,9 +198,12 @@ return [
     'aliases' => [
 
         'App' => Illuminate\Support\Facades\App::class,
+        'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,
         'Blade' => Illuminate\Support\Facades\Blade::class,
+        'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
+        'Bus' => Illuminate\Support\Facades\Bus::class,
         'Cache' => Illuminate\Support\Facades\Cache::class,
         'Config' => Illuminate\Support\Facades\Config::class,
         'Cookie' => Illuminate\Support\Facades\Cookie::class,
@@ -211,6 +228,7 @@ return [
         'Schema' => Illuminate\Support\Facades\Schema::class,
         'Session' => Illuminate\Support\Facades\Session::class,
         'Storage' => Illuminate\Support\Facades\Storage::class,
+        'Str' => Illuminate\Support\Str::class,
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
@@ -222,7 +240,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Calendar' => MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
+        'ReCaptcha' => Biscolab\ReCaptcha\Facades\ReCaptcha::class,
     ],
 
     'debug_blacklist' => [
@@ -239,6 +257,9 @@ return [
             'CLOUDSHARE_USERS_PASSWORD',
             'CLOUDSHARE_ADMINS_USERNAME',
             'CLOUDSHARE_ADMINS_PASSWORD',
+            'IMAP_HOST',
+            'IMAP_USERNAME',
+            'IMAP_PASSWORD',
         ],
         '_SERVER' => [
             'APP_KEY',
@@ -253,9 +274,13 @@ return [
             'CLOUDSHARE_USERS_PASSWORD',
             'CLOUDSHARE_ADMINS_USERNAME',
             'CLOUDSHARE_ADMINS_PASSWORD',
+            'IMAP_HOST',
+            'IMAP_USERNAME',
+            'IMAP_PASSWORD',
         ],
         '_POST' => [
             'password',
+            'password_confirmation'
         ],
     ],
 

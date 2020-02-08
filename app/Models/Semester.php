@@ -31,6 +31,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class Semester extends \Eloquent {
     private static $current_semester = ['current' => null, 'shifted' => null];
 
+    protected $dates = ['start', 'end', 'created_at', 'modified_at'];
+
     public function gigs() {
         return $this->hasMany('App\Models\Gig');
     }
@@ -57,7 +59,7 @@ class Semester extends \Eloquent {
                 self::$current_semester[$shift] = Semester::where('start', '<=', $today)->where('end', '>=', $today)->firstOrFail();
             } catch (ModelNotFoundException $error) {
                 // No fitting semester found: Add one and try again. This should never happen in production.
-                if ((new SemesterController())->generateNewSemester()) {
+                if (SemesterController::generateNewSemester()) {
                     self::$current_semester[$shift] = Semester::where('start', '<=', $today)->where('end', '>=', $today)->firstOrFail();
                 }
             }

@@ -7,6 +7,7 @@ use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use GuzzleHttp;
+use Illuminate\Support\Facades\Cache;
 /*use Psr\Http\Message;*/
 
 class FileAccessController extends Controller
@@ -77,7 +78,7 @@ class FileAccessController extends Controller
     }
 
     private function generateCloudUrl($type, $id) {
-        $cache_key = 'cloudshare_url_' . $type . '_' . $id;
+        $cache_key = 'cloudshare_url_' . $type . '_' . $id; //Cache::flush();
 
         $cloudshare_url = cache_atomic_lock_provider($cache_key, function ($key, &$cache_expiry_time, $lock_time) use ($type, $id) {
             $config = \Config::get('cloud');
@@ -92,7 +93,8 @@ class FileAccessController extends Controller
 
             // The cache should expire before the share expires. Additionally, we don't want to run into trouble if someone accesses the share just before midnight
             // There is no need to convert back to our timezone, Cache and Carbon should take care of that
-            $cache_expiry_time = $share_expiry_time->copy()->sub($access_duration);
+            //$cache_expiry_time = $share_expiry_time->copy()->sub($access_duration);
+            $cache_expiry_time = 60;  // Nextcloud currently has a bug that sometimes purges all shared links. Therefore we renew them every hour. Go back to the old system once the bug is fixed.
 
             $this->connectCloud($config['uri'], $config['shares'][$type]['username'], $config['shares'][$type]['password']);
 

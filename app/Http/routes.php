@@ -24,6 +24,7 @@ Route::group(['middleware' => 'web'], function () {
             // And for user groups.
             Route::group(['middleware' => 'admin'], function() {
                 Route::resource('roles', 'RoleController');
+                Route::get('mailchecker/overview', 'MailcheckerController@overview')->name("mailchecker.overview");
             });
 
             /**

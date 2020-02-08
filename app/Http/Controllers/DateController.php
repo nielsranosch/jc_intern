@@ -7,7 +7,7 @@ use App\Models\Gig;
 use App\Models\Rehearsal;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request;
 use MaddHatter\LaravelFullcalendar\Event;
 use MaddHatter\LaravelFullcalendar\Facades\Calendar;
 use Illuminate\Support\Facades\Auth;
@@ -80,7 +80,7 @@ class DateController extends Controller {
      * @return array
      */
     public static function getDateTypes() {
-        return array_map('str_singular', array_keys(self::$date_types));
+        return array_map('Str::singular', array_keys(self::$date_types));
     }
 
     public static function getDateStatuses() {
@@ -105,19 +105,19 @@ class DateController extends Controller {
         $view_variables = [];
 
         $view_variables['override_types'] = [];
-        if (Input::has('hideByType') && is_array(Input::get('hideByType')) && (count(Input::get('hideByType')) > 0 )) {
-            $view_variables['override_types'] = Input::get('hideByType');
+        if (Request::has('hideByType') && is_array(Request::input('hideByType')) && (count(Request::input('hideByType')) > 0 )) {
+            $view_variables['override_types'] = Request::input('hideByType');
             $view_variables['override_types'] = array_intersect(self::getDateTypes(), $view_variables['override_types']); // Because never trust the client!
         }
 
         $view_variables['override_statuses'] = [];
-        if (Input::has('hideByStatus') && is_array(Input::get('hideByStatus')) && (count(Input::get('hideByStatus')) > 0 )) {
-            $view_variables['override_statuses'] = Input::get('hideByStatus');
+        if (Request::has('hideByStatus') && is_array(Request::input('hideByStatus')) && (count(Request::input('hideByStatus')) > 0 )) {
+            $view_variables['override_statuses'] = Request::input('hideByStatus');
             $view_variables['override_statuses'] = array_intersect(self::getDateStatuses(), $view_variables['override_statuses']); // Because never trust the client!
         }
 
         // showAll overrides all hideBy's
-        $view_variables['override_show_all'] = Input::has('showAll') && 'true' === Input::get('showAll');
+        $view_variables['override_show_all'] = Request::has('showAll') && 'true' === Request::input('showAll');
 
         // Prepare rest of view variables.
         // Always show calender with old dates, too.
@@ -213,8 +213,8 @@ class DateController extends Controller {
      */
     public function renderIcal() {
         $date_types = [];
-        if (Input::has('show_types') && is_array(Input::get('show_types')) && (count(Input::get('show_types')) > 0 )) {
-            $show_types = Input::get('show_types');
+        if (Request::has('show_types') && is_array(Request::input('show_types')) && (count(Request::input('show_types')) > 0 )) {
+            $show_types = Request::input('show_types');
 
             foreach (self::$date_types as $key => $value) {
                 // For now, we just ignore unknown elements from the GET-array.

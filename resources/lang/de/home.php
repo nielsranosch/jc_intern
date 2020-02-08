@@ -42,7 +42,7 @@ return [
     'echo_needed_body'  => 'Bitte teile mit, ob Du am nächsten Semester teilnimmst!',
     'echo_semester'     => 'Durch einen Klick hier teilst du uns mit, dass du am nächsten Semester teilnimmst.',
     'echo_semester_button' => 'Ich nehme am :semester teil!',
-    'over_limit'        => 'Du musst leider vorsingen, wenn du bei den Semesterabschlusskonzerten mitsingen möchtest. &#x1f61e;',
+    'over_limit'        => 'Du musst leider vorsingen, wenn du bei den Semesterabschlusskonzerten mitsingen möchtest.',
     'invalid_semester'  => 'Bitte trag Dich zum aktuellen Semester ein, um diese Funktionen zu nutzen!',
     'admin_missed_rehearsals_heading'   => 'Vorsinger',
     'admin_missed_rehearsals_body'      => 'Die folgenden :count Sänger haben zu oft gefehlt und müssen vorsingen.',
@@ -57,4 +57,7 @@ return [
     'privacy_policy'    => 'Datenschutzerklärung',
     'noscript_body' => 'Diese Seite benötigt Javascript um richtig zu funktionieren.',
     'noscript_link' => 'Hier erfahren wie man Javavscript aktivieren kann',
+    'admin_mails_body'    => 'Kleine Übersicht über das <a href=":url" rel="noopener noreferrer" style="padding:0;" target="_blank">Postfach</a>:',
+    'admin_mails_heading' => "Postfach",
+    'to_mailbox_overview' => "Zur ausführlichen Übersicht"
 ];
