@@ -4,15 +4,16 @@ Route::group(['middleware' => 'web'], function () {
     // Include authentication routes
     Auth::routes(['register' => false, 'verify' => false]);
 
-    // Rendering calendars requires a different kind of middleware which is implicit for now.
-    Route::get('render_ical', 'DateController@renderIcal')->name('dates.renderIcal');
+    Route::group(['middleware' => 'auth.calendar'], function() {
+        Route::get('render_ical', 'DateController@renderIcal')->name('dates.renderIcal');
 
+    });
 
     Route::group(['middleware' => ['auth', 'debugBar']], function() {
         // The splash screen.
         Route::get('/', 'HomeController@index')->name('index');
 
-        Route::post('users/{users}/updateSemester', 'UserController@updateSemester')->name('users.updateSemester');
+        Route::post('users/{user}/updateSemester', 'UserController@updateSemester')->name('users.updateSemester');
 
         // All other routes need a valid semester from the user.
         Route::group(['middleware' => 'semesterValid'], function () {
@@ -23,6 +24,7 @@ Route::group(['middleware' => 'web'], function () {
             // And for user groups.
             Route::group(['middleware' => 'admin'], function() {
                 Route::resource('roles', 'RoleController');
+                Route::get('mailchecker/overview', 'MailcheckerController@overview')->name("mailchecker.overview");
             });
 
             /**

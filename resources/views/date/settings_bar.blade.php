@@ -5,7 +5,7 @@
     <div class="col-xs-12 col-md-5">
         <div class="row btn-2d-container">
             @foreach($date_types as $button)
-                <?php $button_plural = str_plural($button); ?>
+                <?php $button_plural = Illuminate\Support\Str::plural($button); ?>
                 <div id="toggle-{{$button_plural}}" class="btn btn-{{$button_plural}} btn-2d btn-pressed btn-date-type">
                     {{ trans('date.'.$button_plural) }}
                 </div>
@@ -52,7 +52,7 @@
             dateFilters.activeFilters = {
                 @foreach($date_types as $filter)
                 '{{ $filter }}': {
-                    'plural': '{{ str_plural($filter) }}',
+                    'plural': '{{ Illuminate\Support\Str::plural($filter) }}',
                     'visible': true
                 },
                 @endforeach
@@ -88,7 +88,7 @@
                 @else
                     // Some options to override filters have been passed as GET-parameters. We will now try to parse them to javascript
                     @foreach($override_types as $singular)
-                        <?php $plural = str_plural($singular); ?>
+                        <?php $plural = Illuminate\Support\Str::plural($singular); ?>
                         dateFilters.prepareHideFilter('{{$singular}}');
                     @endforeach
                     @foreach($override_statuses as $status)

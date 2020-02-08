@@ -62,7 +62,7 @@
                                                 @endif
                                             </div>
 
-                                            @include('user.table', ['users' => \App\Models\User::getUsersOfVoice($sub_voice->id)])
+                                            @include('user.table', ['users' => \App\Models\User::getUsersOfVoice($sub_voice->id, false, true)])
                                         </div>
                                     </div>
                                 @endforeach

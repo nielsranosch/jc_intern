@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UsersTableSeeder extends Seeder
 {
@@ -19,8 +20,8 @@ class UsersTableSeeder extends Seeder
             'password' => bcrypt('secret'),
             'voice_id' => 1,
             'last_echo' => 1,
-            'pseudo_id' => str_random(20),
-            'pseudo_password' => str_random(222),
+            'pseudo_id' => Str::random(20),
+            'pseudo_password' => Str::random(222),
         ]);
 
         /*DB::table('users')->insert([
@@ -43,6 +44,6 @@ class UsersTableSeeder extends Seeder
             'last_echo' => 1,
         ]);*/
 
-        //factory(App\Models\User::class, 20)->create();
+        factory(App\Models\User::class, 20)->create();
     }
 }

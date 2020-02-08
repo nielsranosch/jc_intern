@@ -25,7 +25,7 @@
                 <td class="last-name">{{ $user->last_name }}</td>
                 <td>{{ $user->email }} <a href="mailto:{{ $user->email }}" title="{{ trans('user.send_mail') }}" class="pull-right text-large"><i class="far fa-envelope-open"></i></a></td>
                 <td>{{ $user->phone }} <a href="tel:{{ $user->phone }}" title="{{ trans('user.call_phone') }}" class="pull-right text-large"><i class="fa fa-phone"></i></a></td>
-                <td>{{ $user->address_street . ' ' . $user->address_city }} <a href="{{'https://www.google.com/maps/search/'}}@urlescape($user->address_street . ', ' . $user->address_city)/" title="{{ trans('user.address_search') }}" target="_blank" class="pull-right text-large"><i class="far fa-map"></i></a></td>
+                <td>{{ $user->address_street . ' ' . $user->address_city }} <a href="{{'https://www.google.com/maps/search/'}}@urlescape($user->address_street . ', ' . $user->address_city)/" title="{{ trans('user.address_search') }}" target="_blank" rel="noopener noreferrer" class="pull-right text-large"><i class="far fa-map"></i></a></td>
                 @if(Auth::user()->isAdmin() || Auth::user()->id == $user->id)
                     <td class="text-center"><a href="{{ route('users.update', $user->id) }}" title="{{ trans('user.edit') }}" class="btn btn-xs btn-2d"><i class="fa fa-pencil-alt"></i></a></td>
                 @else

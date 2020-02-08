@@ -34,7 +34,7 @@ class CreateUsersTable extends Migration
             $table->foreign('last_echo')->references('id')->on('semesters')->onDelete('set null');
 
             // Pseudo-ID and -password for calendar synchronization
-            $table->string('pseudo_id')->unique();
+            $table->string('pseudo_id', 191)->unique(); // InnoDB (MySQL's engine) can handle VARCHARs only up to 191 when UNIQUE is selected.
             $table->string('pseudo_password');
             /*
              * The Pseudo ID will be passed by calendar-sync-clients to identify the user.

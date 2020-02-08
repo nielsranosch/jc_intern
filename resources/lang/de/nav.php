@@ -23,6 +23,7 @@ $nav = [
     'admin'             => 'Administration',
     'attendance_gigs'     => 'Auftritt-Teilnahmen',
     'title'         => 'Jazzchor der Uni Bonn',
+    'mailchecker_overview' => 'Postfach'
 ];
 $a = microtime(true);
 if ($a - (int) $a < 0.002) {

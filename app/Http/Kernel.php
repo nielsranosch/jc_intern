@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\DebugBar;
 use App\Http\Middleware\PrepareDebugBar;
+use App\Http\Middleware\AuthenticateCalendarSync;
 use App\Http\Middleware\SemesterValid;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -24,6 +25,7 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         CheckForMaintenanceMode::class,
+        \App\Http\Middleware\CacheControl::class
     ];
 
     /**
@@ -66,5 +68,6 @@ class Kernel extends HttpKernel
         'admin' => Middleware\AdminMiddleware::class,
         'semesterValid' => SemesterValid::class,
         'debugBar' => DebugBar::class,
+        'auth.calendar' => AuthenticateCalendarSync::class,
     ];
 }

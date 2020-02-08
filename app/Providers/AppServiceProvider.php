@@ -27,8 +27,11 @@ class AppServiceProvider extends ServiceProvider
         \Form::component('helpBubble', 'components.form.helpBubble', ['content' => '']);
         
         // Buttons
-        \Html::component('addButton', 'components.button.btn-add', ['title', 'href', 'classes' => [], 'attributes' => []]);
+        \Html::component('button', 'components.button.btn', ['title', 'href', 'icon', 'classes' => [], 'attributes' => []]);
+        \Html::component('addButton', 'components.button.btn', ['title', 'href', 'classes' => [], 'attributes' => [], 'icon' => 'plus']);
+        \Html::component('button2d', 'components.button.button', ['title', 'href', 'icon', 'classes' => [], 'attributes' => []]);
         \Form::component('submitInput2d', 'components.button.submit', ['title' => trans('form.save'), 'attributes' => []]);
+        \Form::component('submitDelete2d', 'components.button.delete', ['title' => trans('form.delete'), 'attributes' => []]);
 
         // Versioned form of Html::style and Html::script for cache busting, which use timestamp of lastmodified as GET-Parameter
         \Html::component('styleV', 'components.html.style-versioned', ['filename']);
@@ -40,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
 
+        //TODO: move this to a dedicated class
         \Validator::extend('custom_complexity', function($attribute, $value, $parameters, $validator) {
             /**
              * Function to check if a password satisfies a required 'complexity level'. Two things affect the complexity level: length and types of characters used

@@ -54,7 +54,6 @@ class RehearsalController extends EventController {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        //TODO: Create all attendances for all users.
         $this->validate($request, $this->validation);
 
         $data = $this->prepareDates($request->all());
@@ -180,7 +179,17 @@ class RehearsalController extends EventController {
             return redirect()->route('dates.index')->withErrors([trans('date.not_found')]);
         }
 
-        $rehearsal->delete();
+        
+        try {
+            $rehearsal->delete();
+        } catch (\Exception $exception) {
+            return redirect()->route('dates.index')->withErrors(
+                [
+                    trans('date.delete_error', ['message' => $exception->getMessage()])
+                ]
+            );
+        }
+        //$rehearsal->delete();
 
         \Session::flash('message_success', trans('date.delete_success'));
 

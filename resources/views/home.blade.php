@@ -50,7 +50,7 @@
                                                 {{ str_shorten($gig->title, 10, '...')}}
                                                 @if(true === $gig->hasPlace())
                                                     <br>
-                                                    <a href="{{'https://www.google.com/maps/search/'}}@urlescape($gig->place)/" style="padding:0;" title="{{ trans('date.address_search') }}" target="_blank">({{ str_shorten($gig->place, 10, '...') }}  <i class="far fa-map"></i>)</a>
+                                                    <a href="{{'https://www.google.com/maps/search/'}}@urlescape($gig->place)/" style="padding:0;" title="{{ trans('date.address_search') }}" rel="noopener noreferrer"  target="_blank">({{ str_shorten($gig->place, 10, '...') }}  <i class="far fa-map"></i>)</a>
                                                 @endif
                                             </li>
                                         @endforeach
@@ -74,7 +74,7 @@
                                                 {{ str_shorten($rehearsal->title, 10, '...') }}
                                                 @if(true === $rehearsal->hasPlace())
                                                     <br>
-                                                    <a href="{{'https://www.google.com/maps/search/'}}@urlescape($rehearsal->place)/" style="padding:0;" title="{{ trans('date.address_search') }}" target="_blank">({{ str_shorten($rehearsal->place, 10, '...') }}  <i class="far fa-map"></i>)</a>
+                                                    <a href="{{'https://www.google.com/maps/search/'}}@urlescape($rehearsal->place)/" style="padding:0;" title="{{ trans('date.address_search') }}" rel="noopener noreferrer" target="_blank">({{ str_shorten($rehearsal->place, 10, '...') }}  <i class="far fa-map"></i>)</a>
                                                 @endif
                                             </li>
                                         @endforeach
@@ -136,11 +136,11 @@
                             <div class="panel-element panel-element-info">
                                 <div class="panel-element-body">
                                     <p>{{ trans('home.cloudshare_body') }}</p>
-                                    <a href="{{ route('fileAccess.accessFiles', ['type' => 'users', 'id' => 1]) }}" target="_blank" class="btn btn-2d btn-clear-below">{{ trans('home.cloudshare_button1') }}</a>
+                                    <a href="{{ route('fileAccess.accessFiles', ['type' => 'users', 'id' => 1]) }}" target="_blank" rel="noopener noreferrer" class="btn btn-2d btn-clear-below">{{ trans('home.cloudshare_button1') }}</a>
                                     <br>
-                                    <a href="{{ route('fileAccess.accessFiles', ['type' => 'users', 'id' => 2]) }}" target="_blank" class="btn btn-2d btn-clear-below">{{ trans('home.cloudshare_button2') }}</a>
+                                    <a href="{{ route('fileAccess.accessFiles', ['type' => 'users', 'id' => 2]) }}" target="_blank" rel="noopener noreferrer" class="btn btn-2d btn-clear-below">{{ trans('home.cloudshare_button2') }}</a>
                                     <br>
-                                    <a href="{{ route('fileAccess.accessFiles', ['type' => 'users', 'id' => 3]) }}" target="_blank" class="btn btn-2d btn-success btn-clear-below">{{ trans('home.cloudshare_button3') }}</a>
+                                    <a href="{{ route('fileAccess.accessFiles', ['type' => 'users', 'id' => 3]) }}" target="_blank" rel="noopener noreferrer" class="btn btn-2d btn-success btn-clear-below">{{ trans('home.cloudshare_button3') }}</a>
 
                                     @if(Auth::user()->isAdmin())
                                         <p>{{ trans('home.cloudshare_admin_body') }}</p>
@@ -158,10 +158,10 @@
                                         <br>
                                         <p>{{ trans('home.echo_semester') }}</p>
                                         <a href="#"
-                                           class="btn btn-2d btn-post"
+                                           class="btn btn-2d btn-post" {{-- TODO: This would be much better as POST !!! --}}
                                            data-url="{{ route('users.updateSemester', $user->id) }}"
                                            data-callback-success="hideEchoNeededPanel">
-                                            {{ trans('home.echo_semester_button', ['semester' => $current_semester->label])}}
+                                            {{ trans('home.echo_semester_button', ['semester' => $echo_semester->label])}}
                                         </a>
                                     </div>
                                 </div>
@@ -179,6 +179,33 @@
                                                 <li>{{ $user->first_name }} {{ $user->last_name }}</li>
                                             @endforeach
                                         </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        @if(Auth::user()->isAdmin())
+                            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <div class="panel-heading  panel-heading-{{ $admin_mails_panel['state'] }}">{{ trans('home.admin_mails_heading') }}</div>
+                                <div class="panel-element panel-element-{{ $admin_mails_panel['state'] }}">
+                                    <div class="panel-element-body">
+                                        @if($admin_mails_panel["data"] === "NO_IMAP_CONNECTION")
+                                            <div class="panel-element-main">{{ trans("mailchecker.no_imap") }}</div>
+                                        @else
+                                            <p>{!! trans("home.admin_mails_body", ["url" => config("mailchecker.webmail")]) !!}</p>
+                                                @foreach($admin_mails_panel['data'] as $key => $value)
+                                                <ul><li>{{ trans("mailchecker." . $key) === "mailchecker." . $key ? $key : trans("mailchecker." . $key) }}</li></ul>
+                                                    <p>{{ trans("mailchecker.mailbox_numbers", ["total" => $value["total"], "unread" => $value["unread"]]) }}
+                                                        @if(null !== $value["newest_message"])
+                                                            <br />
+                                                            {{ trans("mailchecker.latest_message_from", ["from" => str_shorten($value["newest_message"]["from"], 10, "...")]) }}
+                                                            {{ trans("mailchecker.latest_message_date", ["date" => $value["newest_message"]["date"]->format('d.m.Y')]) }}
+                                                            {{ trans("mailchecker.latest_message_subject", ["subject" => str_shorten($value["newest_message"]["subject"], 10, '...')]) }}
+                                                        @endif
+                                                    </p>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    <p><a href="{{ route("mailchecker.overview") }}">{{ trans("home.to_mailbox_overview") }}</a></p>
                                     </div>
                                 </div>
                             </div>
@@ -239,8 +266,9 @@
                     $.notify('{{ trans('date.attendance_not_saved') }}', 'danger');
 
                     // TODO: maybe status codes are better here? However status messages should be consistent among browsers and they are passed by jquery
-                    if (error === 'Unauthorized') {
-                        // Session expired or user logged out in another tab (401)
+                    if (error === 'Unauthorized' || error === 'No Reason Phrase') {
+                        // Unauthorized (401): Session expired or user logged out in another tab
+                        // No Reason Phrase (419): XSRF-Token verification failed or a problem with authorization
                         location.reload(true);
                     } else if (error === 'Unprocessable Entity') {
                         // Validation failed (422)

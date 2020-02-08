@@ -9,6 +9,7 @@ use App\Models\Gig;
 use App\Models\Semester;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
@@ -32,7 +33,7 @@ class HomeController extends Controller
      * @return mixed
      */
     private function eventQueryBuild($event_class, String $table_name, Carbon $reference_date, $user, $limit = 3) {
-        $singular = str_singular($table_name);
+        $singular = Str::singular($table_name);
 
         $upcoming = $event_class::where('end', '>', $reference_date)->orderBy('start')->limit($limit);
 
@@ -55,7 +56,7 @@ class HomeController extends Controller
      * @return mixed
      */
     private function eventQueryHideByAttendance($query, String $table_name, int $attendance, bool $hide_if_null = false) {
-        $singular = str_singular($table_name);
+        $singular = Str::singular($table_name);
 
         //TODO: Nicer query building.
         return $query->where(function ($q) use ($singular, $attendance, $hide_if_null) {
@@ -75,7 +76,7 @@ class HomeController extends Controller
      * @return mixed
      */
     private function eventQueryShowByAttendance($query, String $table_name, array $attendances) {
-        $singular = str_singular($table_name);
+        $singular = Str::singular($table_name);
 
         //TODO: Nicer query building.
         $query = $query->where (function($q) use ($singular, $attendances) {
@@ -192,9 +193,7 @@ class HomeController extends Controller
     }
 
     private function nextEchoNeeded(User $user, Carbon $today) {
-        $last_echo = Semester::find($user->last_echo);
-        if (null === $last_echo) return false;
-        return ((new Carbon($last_echo->end))->subMonths(2)->lt($today));
+        return ! Semester::currentList(true)->contains('id', '=', $user->last_echo);
     }
 
     private function prepareAdminMissedRehearsalsPanel() {
@@ -203,7 +202,7 @@ class HomeController extends Controller
         $panel = ['state' => 'info', 'count' => 0, 'data' => collect()];
 
         if (\Auth::user()->isAdmin() === true) {
-            $data = User::all()->filter(function($user){
+            $data = User::all(['id', 'first_name', 'last_name'], false, false)->filter(function($user){
                 return $user->isOverMissingRehearsalsLimit();
             });
             $panel['count'] += $data->count();
@@ -214,9 +213,16 @@ class HomeController extends Controller
     }
 
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
+     * @return array
+     */
+    private function prepareAdminMailsPanel() {
+        $data = MailcheckerController::prepareMailboxOverview(["INBOX"], false);
+
+        return ['state' => 'info', 'count' => 0, 'data' => $data];
+    }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
         $today = Carbon::today();
@@ -234,14 +240,31 @@ class HomeController extends Controller
             'next_gigs_panel' => $this->prepareNextEventsPanel(Gig::class, 'gigs', $now, $user, true),
             'next_birthdays_panel' => $this->prepareNextBirthdaysPanel($today),
             'echo_needed' => $this->nextEchoNeeded($user, $today),
-            'current_semester' => Semester::current(),
+            'current_semester' => Semester::current(false),
+            'echo_semester' => Semester::current(true),
             'today' => $today,
             'now'   => $now,
-            'user' => $user
+            'user' => $user,
         ];
 
         if (\Auth::user()->isAdmin()) {
-            $view_data['admin_missed_rehearsals_panel'] = $this->prepareAdminMissedRehearsalsPanel();
+
+            $admin_missed_rehearsals_panel = cache_atomic_lock_provider("ADMIN_MISSED_REHEARSALS_PANEL", function() {
+                return $this->prepareAdminMissedRehearsalsPanel();
+            }, 240);
+
+            $admin_mails_panel = cache_atomic_lock_provider("ADMIN_MAILS_PANEL", function ($key, &$cache_expiry_time) {
+                    $admin_mails_panel = $this->prepareAdminMailsPanel();
+                    if ($admin_mails_panel['data'] === 'NO_IMAP_CONNECTION') {
+                        $cache_expiry_time = 15;
+                    } else {
+                        $cache_expiry_time = 60;
+                    }
+                return $admin_mails_panel;
+            });
+
+            $view_data['admin_missed_rehearsals_panel'] = $admin_missed_rehearsals_panel;
+            $view_data['admin_mails_panel'] = $admin_mails_panel;
         }
 
         return view('home', $view_data);

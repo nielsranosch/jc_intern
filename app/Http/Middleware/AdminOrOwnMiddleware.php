@@ -19,8 +19,6 @@ class AdminOrOwnMiddleware
             if ($request->user()->isAdmin()) {
                 // admins have access to everything
                 return $next($request);
-            } else if ($request->user()->id == $request->route()->parameter('users')) {
-                return $next($request);
             } else if ($request->user()->id == $request->route()->parameter('user')) {
                 return $next($request);
             }

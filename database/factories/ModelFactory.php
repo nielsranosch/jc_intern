@@ -11,20 +11,22 @@
 |
 */
 
+use Illuminate\Support\Str;
+
 $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     return [
         'first_name' => $faker->firstName,
         'last_name' => $faker->lastName,
         'email' => $faker->safeEmail,
-        'password' => bcrypt(str_random(10)),
+        'password' => bcrypt(Str::random(10)),
         'voice_id' => $faker->numberBetween(5,12),
         'address_street' => $faker->streetAddress,
         'address_zip' => $faker->postcode,
         'address_city' => $faker->city,
         'birthday' => $faker->date(),
         'last_echo' => 1,
-        'pseudo_id' => str_random(20),
-        'pseudo_password' => str_random(222),
+        'pseudo_id' => Str::random(20),
+        'pseudo_password' => Str::random(222),
         'phone' => $faker->phoneNumber,
     ];
 });

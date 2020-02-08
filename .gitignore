@@ -12,3 +12,5 @@ composer.lock
 index.html
 robots.txt
 .phpstorm.meta.php
+npm-shrinkwrap.json
+package-lock.json

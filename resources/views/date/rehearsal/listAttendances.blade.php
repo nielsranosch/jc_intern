@@ -39,7 +39,7 @@
                                                             <div class="row">
                                                                 <?php
                                                                 /** @var App\Models\Voice $sub_voice */
-                                                                $users = \App\Models\User::getUsersOfVoice($sub_voice->id, true)
+                                                                $users = \App\Models\User::getUsersOfVoice($sub_voice->id, true);
                                                                 ?>
                                                                 @foreach($users as $user)
                                                                         @include('date.rehearsal.listAttendances.user_entry', ['user' => $user, 'currentRehearsal' => $currentRehearsal])
@@ -130,8 +130,9 @@
                 $.notify('{{ trans('date.attendance_not_saved') }}', 'danger');
 
                 // TODO: maybe status codes are better here? However status messages should be consistent among browsers and they are passed by jquery
-                if (error === 'Unauthorized') {
-                    // Session expired or user logged out in another tab (401)
+                if (error === 'Unauthorized' || error === 'No Reason Phrase') {
+                    // Unauthorized (401): Session expired or user logged out in another tab
+                    // No Reason Phrase (419): XSRF-Token verification failed or a problem with authorization
                     location.reload(true);
                 } else if (error === 'Unprocessable Entity') {
                     // Validation failed (422)

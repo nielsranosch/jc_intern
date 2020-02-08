@@ -11,7 +11,7 @@ class SemestersTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('semesters')->insert([
+        /*DB::table('semesters')->insert([
             [
                 'id' => 1,
                 'start' => '2017-04-01',
@@ -29,6 +29,8 @@ class SemestersTableSeeder extends Seeder
                 'end' => '2018-09-30',
                 'label' => 'Sommersemester 18',
             ]
-        ]);
+        ]);*/
+
+        \App\Http\Controllers\SemesterController::getSemester(\Carbon\Carbon::now());
     }
 }

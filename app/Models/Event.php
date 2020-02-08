@@ -173,6 +173,8 @@ trait Event {
         return $attendances->count();
     }
 
+    protected static $current_events = null;
+
     /**
      * Load events from database according to given options
      *
@@ -184,6 +186,16 @@ trait Event {
      * @return \Eloquent[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function all($columns = ['*'], $with_old = false, $with_attendances = false, $with_new = true, $current_only = false) {
+        // The most common query is being stored to reduce database access
+        $cache_this = false;
+        if ($with_old === true && $with_attendances === false && $with_new === false && $current_only === true) {
+            if (self::$current_events !== null) {
+                return self::$current_events;
+            } else {
+                $cache_this = true;
+            }
+        }
+
         $query = parent::orderBy('start');
 
         if ($with_attendances) {
@@ -202,6 +214,12 @@ trait Event {
             $query->where('semester_id', '=', Semester::current()->id);
         }
 
-        return $query->get($columns);
+        $result = $query->get($columns);
+
+        if ($cache_this) {
+            self::$current_events = $result;
+        }
+
+        return $result;
     }
 }

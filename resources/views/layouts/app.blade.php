@@ -65,6 +65,8 @@
         };
     </script>
 
+    {{-- {!! htmlScriptTagJsApi([]) !!} --}}
+
     <noscript><style type="text/css">.hide-from-noscript{display: none;}</style></noscript>
 </head>
 <body id="app-layout" data-spy="scroll" data-target="#scroll-spy-nav">
@@ -151,6 +153,11 @@
                                 @endif
                             </ul>
                         </li>
+                        @if(Auth::user()->isAdmin())
+                            <li class="dropdown">
+                                <a href="{{ route('mailchecker.overview') }}">{{ trans("nav.mailchecker_overview") }}</a>
+                            </li>
+                        @endif
                         <!--<li>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{ trans('nav.sheets') }}&nbsp;<span class="caret"></span>
@@ -233,6 +240,6 @@
 
     @yield('js')
 
-    <p id="footer"><a href="{{ Config::get('app.imprint') }}">{{ trans('home.imprint') }}</a> &bull; <a href="{{ Config::get('app.privacy_policy') }}">{{ trans('home.privacy_policy') }}</a></p>
+    <p id="footer"><a href="{{ Config::get('app.imprint') }}" rel="noopener noreferrer" >{{ trans('home.imprint') }}</a> &bull; <a href="{{ Config::get('app.privacy_policy') }}" rel="noopener noreferrer">{{ trans('home.privacy_policy') }}</a></p>
 </body>
 </html>

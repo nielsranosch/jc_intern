@@ -35,10 +35,10 @@
                                 <button type="button" id="voice-choir" class="btn btn-group-lg btn-2d">{{ trans('sheet.choir') }}</button>
                                 @foreach ($parentVoices as $parentVoice)
                                     <?php $childVoices = $parentVoice->children; ?>
-                                    <?php $childIds    = array_flatten($parentVoice->children()->get(['id'])->toArray()); ?>
+                                    <?php $childIds    = Illuminate\Support\Arr::flatten($parentVoice->children()->get(['id'])->toArray()); ?>
                                     <button type="button" id="voice-id-{{ $parentVoice->id }}" data-parent-of="{{ join(',', $childIds) }}" class="parent-voice btn btn-2d">{{ $parentVoice->name }}</button>
                                         @foreach ($childVoices as $childVoice)
-                                            <button type="button" id="voice-id-{{ $childVoice->id }}" data-users="{{  join(',', array_flatten(App\User::current()->ofVoice($childVoice->id)->get(['id'])->toArray())) }}" class="btn btn-sm btn-2d child-voice">{{ $childVoice->name }}</button>
+                                            <button type="button" id="voice-id-{{ $childVoice->id }}" data-users="{{  join(',', Illuminate\Support\Arr::flatten(App\User::current()->ofVoice($childVoice->id)->get(['id'])->toArray())) }}" class="btn btn-sm btn-2d child-voice">{{ $childVoice->name }}</button>
                                         @endforeach
                                     @endforeach
                                 <button type="button" id="voice-deselect" class="btn btn-group-lg btn-2d">{{ trans('sheet.deselect') }}</button>

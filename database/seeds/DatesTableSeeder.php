@@ -10,6 +10,8 @@ class DatesTableSeeder extends Seeder
      * @return void
      */
     public function run() {
+        // There is currently no reliable way to create consistent data.
+
         /* DB::table('rehearsals')->insert([
             'semester_id' => 1,
             'title'       => 'Erste Probe',

@@ -7,4 +7,5 @@ return [
     'winter_term_start' => '10', // Month 10
     'winter_term_name'  => 'Wintersemester',
     'winter_term_short_name'  => 'WS',
+    'transition_period' => 90,  // days
 ];

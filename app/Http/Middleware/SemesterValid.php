@@ -16,8 +16,7 @@ class SemesterValid {
      * @return mixed
      */
     public function handle($request, Closure $next) {
-        //TODO: nay
-        if(empty($request->user()) || (new Carbon($request->user()->last_echo()->firstOrFail()->end))->isPast()) {
+        if(empty($request->user()) || (!$request->user()->isActive())) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
