@@ -11,9 +11,9 @@
 </div>
 
 <form id="comment-form" class="modal" style="display: none;">
-<b>{{ trans('form.confirmDelete') }}</b><br>
-{!! Html::button2d(trans('form.yes'), "#", "", [], ["id" => "buttonYes", "style" => "margin-left: 10px;"]) !!}
-{!! Html::button2d(trans('form.no'), "#", "", [], ["id" => "buttonNo"]) !!}
+<strong>{{ trans('form.confirmDelete') }}</strong><br>
+{!! Html::button2d(trans('form.yes'), "#", "check", [], ["id" => "buttonYes", "style" => "margin-left: 10px;"]) !!}
+{!! Html::button2d(trans('form.no'), "#", "times", [], ["id" => "buttonNo"]) !!}
 </form>
 
 @section('js')

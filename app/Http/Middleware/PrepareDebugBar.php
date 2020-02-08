@@ -20,7 +20,9 @@ class PrepareDebugBar
          *
          * TODO: check if debugbar.enabled affects performance
          */
-        \Debugbar::disable();
+        if (!config('app.debug')) {
+            \Debugbar::disable();
+        }
         return $next($request);
     }
 }
