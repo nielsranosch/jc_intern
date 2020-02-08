@@ -1,66 +1,30 @@
 <?php
 
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | API Keys
-    |--------------------------------------------------------------------------
-    |
-    | Set the public and private API keys as provided by reCAPTCHA.
-    |
-    | In version 2 of reCAPTCHA, public_key is the Site key,
-    | and private_key is the Secret key.
-    |
-    */
-    'public_key'     => env('RECAPTCHA_PUBLIC_KEY', ''),
-    'private_key'    => env('RECAPTCHA_PRIVATE_KEY', ''),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Template
-    |--------------------------------------------------------------------------
-    |
-    | Set a template to use if you don't want to use the standard one.
-    |
-    */
-    'template'    => '',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Driver
-    |--------------------------------------------------------------------------
-    |
-    | Determine how to call out to get response; values are 'curl' or 'native'.
-    | Only applies to v2.
-    |
-    */
-    'driver'      => 'curl',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Options
-    |--------------------------------------------------------------------------
-    |
-    | Various options for the driver
-    |
-    */
-    'options'     => [
-
-        'curl_timeout' => 1,
-        'curl_verify' => true,
-
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Version
-    |--------------------------------------------------------------------------
-    |
-    | Set which version of ReCaptcha to use.
-    |
-    */
-
-    'version'     => 2,
-
+    'api_site_key'                  => env('RECAPTCHA_SITE_KEY', ''),
+    'api_secret_key'                => env('RECAPTCHA_SECRET_KEY', ''),
+    // changed in v4.0.0
+    'version'                       => 'v2', // supported: "v3"|"v2"|"invisible"
+    // @since v3.4.3 changed in v4.0.0
+    'curl_timeout'                  => 10,
+    'skip_ip'                       => [], // array of IP addresses - String: dotted quad format e.g.: "127.0.0.1"
+    // @since v3.2.0 changed in v4.0.0
+    'default_validation_route'      => 'biscolab-recaptcha/validate',
+    // @since v3.2.0 changed in v4.0.0
+    'default_token_parameter_name' => 'token',
+    // @since v3.6.0 changed in v4.0.0
+    'default_language'             => null,
+    // @since v4.0.0
+    'default_form_id'              => 'biscolab-recaptcha-invisible-form', // Only for "invisible" reCAPTCHA
+    // @since v4.0.0
+    'explicit'                     => false, // true|false
+    // @since v4.0.0
+    'tag_attributes'               => [
+        'theme'                    => 'light', // "light"|"dark"
+        'size'                     => 'normal', // "normal"|"compact"
+        'tabindex'                 => 0,
+        'callback'                 => null, // DO NOT SET "biscolabOnloadCallback"
+        'expired-callback'         => null, // DO NOT SET "biscolabOnloadCallback"
+        'error-callback'           => null, // DO NOT SET "biscolabOnloadCallback"
+    ]
 ];

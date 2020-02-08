@@ -180,7 +180,7 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         MaddHatter\LaravelFullcalendar\ServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,  // also loaded in production :-(
-        Greggilbert\Recaptcha\RecaptchaServiceProvider::class,
+        Biscolab\ReCaptcha\ReCaptchaServiceProvider::class,
         Laravel\Tinker\TinkerServiceProvider::class
     ],
 
@@ -240,7 +240,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Calendar' => MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
+        'ReCaptcha' => Biscolab\ReCaptcha\Facades\ReCaptcha::class,
     ],
 
     'debug_blacklist' => [
