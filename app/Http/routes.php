@@ -9,7 +9,7 @@ Route::group(['middleware' => 'web'], function () {
 
     });
 
-    Route::group(['middleware' => ['auth', 'debugBar']], function() {
+    Route::group(['middleware' => 'auth'], function() {
         // The splash screen.
         Route::get('/', 'HomeController@index')->name('index');
 
