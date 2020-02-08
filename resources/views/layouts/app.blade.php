@@ -65,7 +65,7 @@
         };
     </script>
 
-    {{-- {!! htmlScriptTagJsApi([]) !!} --}}
+    {!! htmlScriptTagJsApi([]) !!}
 
     <noscript><style type="text/css">.hide-from-noscript{display: none;}</style></noscript>
 </head>

@@ -260,6 +260,8 @@ return [
             'IMAP_HOST',
             'IMAP_USERNAME',
             'IMAP_PASSWORD',
+            'RECAPTCHA_SITE_KEY',
+            'RECAPTCHA_SECRET_KEY'
         ],
         '_SERVER' => [
             'APP_KEY',
