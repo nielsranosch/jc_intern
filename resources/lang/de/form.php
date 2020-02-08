@@ -4,6 +4,8 @@
  * Translations for Forms and its views.
  */
 return [
+    'yes'           => 'Ja',
+    'no'            => 'Nein',
     'first_name'    => 'Vorname',
     'last_name'     => 'Nachname',
     'email'         => 'E-Mail-Adresse',
@@ -37,6 +39,7 @@ return [
     'mandatory'     => 'verpflichtend',
     'weight'        => 'Gewichtung',
     'save'          => 'Speichern',
+    'delete'        => 'Löschen', 
     'help_date'     => 'Bitte ein Datum angeben.',
     'help_dateTime' => 'Bitte ein Datum und eine Uhrzeit angeben, z.B. "13.04.2016 19:30".',
     'repeat'        => 'Termin wiederholen',
@@ -50,6 +53,7 @@ return [
     'excuse'        => 'Entschuldigung',
     'add_comment'   => 'Kommentar hinzufügen',
     'comment'       => 'Bitte einen Kommentar angeben',
+    'confirmDelete' => 'Soll das Event wirklich gelöscht werden?',
     'submit'        => 'Speichern',
     'optional'      => '(optional)',
     'error_user_not_found' => 'Es gibt kein Chormitglied namens :name.',

@@ -17,6 +17,7 @@
                         <div class="panel-heading">{{ trans('date.rehearsal_show_title') }}</div>
 
                         @include('date.rehearsal.form', ['options' => ['url' => route('rehearsals.update', ['rehearsal' => $rehearsal->id]), 'method' => 'PUT'], 'rehearsal' => $rehearsal])
+                        @include('date.deleteform', ['options' => ['url' => route('rehearsals.destroy', ['rehearsal' => $rehearsal->id]), 'method' => 'DELETE'], 'event' => $rehearsal])
                     </div>
                 </div>
             </div>
