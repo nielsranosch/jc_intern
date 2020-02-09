@@ -133,7 +133,6 @@ class User extends Authenticatable {
         'gig'       => 'can_plan_gig',
         'sheet'     => 'can_organise_sheets',
         'configure' => 'can_configure_system',
-        'debug'     => 'show_debuginfo'
     ];
 
     private $is_admin = [
@@ -142,7 +141,6 @@ class User extends Authenticatable {
         'gig'       => null,
         'sheet'     => null,
         'configure' => null,
-        'debug'     => null,
     ];
 
     private static $all_current_users = ['current' => null, 'shifted' => null];
