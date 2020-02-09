@@ -7,6 +7,7 @@ use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Route;
 
 /**
  * App\Models\User
@@ -208,6 +209,13 @@ class User extends Authenticatable {
     }
 
     public function getEmailAttribute($value) {
+        if (Route::currentRouteName() === "password.email" || Route::currentRouteName() === "password.update") {
+            // Makes it possible to reset forgotton passwords.
+            // First case: RoutesNotifications::routeNotificationFor reads $this->email. Since no user is logged in when resetting a forgotten password, the email address returned there would always be blank.
+            // Second case: ResetPasswordController::reset will read $user->email to verify the reset token against database.
+            return $value;
+        }
+
         return $this->parsePrivateData($value);
     }
 
