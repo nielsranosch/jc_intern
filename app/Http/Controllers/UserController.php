@@ -115,7 +115,7 @@ class UserController extends Controller {
             ]
         );
 
-        $data['password'] = bcrypt(array_pull($data, 'password'));
+        $data['password'] = bcrypt(\Arr::pull($data, 'password'));
         $pseudo_password = Str::random(222);
 
         // Generate a pseudo_id which is unique
@@ -238,7 +238,7 @@ class UserController extends Controller {
             $this->validate($request, $validation);
 
             $data = $request->all();
-            $hashed_password = bcrypt(array_pull($data, 'password'));
+            $hashed_password = bcrypt(\Arr::pull($data, 'password'));
         }
 
 
