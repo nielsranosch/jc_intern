@@ -230,7 +230,7 @@ class DateController extends Controller {
             $date_types = self::$date_types;
         }
 
-        $user = Auth::user();
+        $user = Auth::guard('calendarSync')->user();
         $calendar_id = $user->id . '_' . implode('-', array_keys($date_types));
         $calendar_name = implode('-', array_keys($date_types)) . '_' . $user->pseudo_id;
 
