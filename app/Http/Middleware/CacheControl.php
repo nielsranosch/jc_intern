@@ -17,6 +17,7 @@ class CacheControl
         $response = $next($request);
         if (!$response->headers->get('expires')) {
             $response->header('cache-control', 'no-store,no-cache,must-revalidate');
+            $response->header('expires', '-1');
         }
 
         return $response;
