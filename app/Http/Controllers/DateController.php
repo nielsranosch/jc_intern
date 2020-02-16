@@ -5,14 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Birthday;
 use App\Models\Gig;
 use App\Models\Rehearsal;
-use App\Models\User;
-use App\Models\Semester;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request;
 use MaddHatter\LaravelFullcalendar\Event;
 use MaddHatter\LaravelFullcalendar\Facades\Calendar;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
+
 
 class DateController extends Controller {
     // There are multiple ways to display the dates.
@@ -52,7 +51,7 @@ class DateController extends Controller {
      * @param string $calendar_name
      * @return array
      */
-    protected static function ical_headers(string $calendar_name) {
+    public static function ical_headers(string $calendar_name) {
         return [
             'Content-Type' => 'text/calendar; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="calendar_'.$calendar_name.'.ics"'
@@ -81,7 +80,7 @@ class DateController extends Controller {
      * @return array
      */
     public static function getDateTypes() {
-        return array_map('str_singular', array_keys(self::$date_types));
+        return array_map('Str::singular', array_keys(self::$date_types));
     }
 
     public static function getDateStatuses() {
@@ -106,19 +105,19 @@ class DateController extends Controller {
         $view_variables = [];
 
         $view_variables['override_types'] = [];
-        if (Input::has('hideByType') && is_array(Input::get('hideByType')) && (count(Input::get('hideByType')) > 0 )) {
-            $view_variables['override_types'] = Input::get('hideByType');
+        if (Request::has('hideByType') && is_array(Request::input('hideByType')) && (count(Request::input('hideByType')) > 0 )) {
+            $view_variables['override_types'] = Request::input('hideByType');
             $view_variables['override_types'] = array_intersect(self::getDateTypes(), $view_variables['override_types']); // Because never trust the client!
         }
 
         $view_variables['override_statuses'] = [];
-        if (Input::has('hideByStatus') && is_array(Input::get('hideByStatus')) && (count(Input::get('hideByStatus')) > 0 )) {
-            $view_variables['override_statuses'] = Input::get('hideByStatus');
+        if (Request::has('hideByStatus') && is_array(Request::input('hideByStatus')) && (count(Request::input('hideByStatus')) > 0 )) {
+            $view_variables['override_statuses'] = Request::input('hideByStatus');
             $view_variables['override_statuses'] = array_intersect(self::getDateStatuses(), $view_variables['override_statuses']); // Because never trust the client!
         }
 
         // showAll overrides all hideBy's
-        $view_variables['override_show_all'] = Input::has('showAll') && 'true' === Input::get('showAll');
+        $view_variables['override_show_all'] = Request::has('showAll') && 'true' === Request::input('showAll');
 
         // Prepare rest of view variables.
         // Always show calender with old dates, too.
@@ -208,84 +207,14 @@ class DateController extends Controller {
     }
 
     /**
-     * Renders an empty calendar. Useful for purging a user's calendar when they are no longer allowed to be subscribed.
-     *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function emptyIcal() {
-        $calendar_name = 'jazzchor_expired_calendar';
-        $cache_key = 'render_ical_' . $calendar_name;
-
-        $ical = cache_atomic_lock_provider($cache_key, function () use ($calendar_name) {
-            $vCalendar = new \Eluceo\iCal\Component\Calendar($calendar_name);
-            $vCalendar->setName(trans('date.empty_ical_title'));
-            $vCalendar->setDescription(trans('date.empty_ical_description'));
-            return $vCalendar->render();
-        }, Carbon::now()->addYear());
-
-        // Carrying status code 410 is the best choice because it instructs the client to purge the ressource and never ask again.
-        // However, some clients don't really do that. Unfortunately, we don't have time to investigate which clients react in what why to which error codes.
-        // Therefore, we just randomly throw some response codes at them hoping that one will make them purge the calendar eventually.
-        switch (rand(1,12)) {
-            case 1: case 2: case 3:
-                $status_code = 200; // 'Success', but purges the calendar. Weighted higher because it ensures an empty calendar on the client.
-                break;
-            case 4:
-                $status_code = 301; // 'Moved permanently', but to an unknown location
-                break;
-            case 5:
-                $status_code = 403; // 'Forbidden'
-                break;
-            case 6:
-                $status_code = 404; // 'Not found'
-                break;
-            default:
-                $status_code = 410; // 'Gone'
-                break;
-        }
-
-
-        return response($ical, $status_code)->setExpires(Carbon::now('UTC')->addYears(10))
-            ->withHeaders(self::ical_headers($calendar_name));
-    }
-
-    /**
      * Method to render an ICAL calender.
      *
      * @return mixed
      */
     public function renderIcal() {
-        /*
-         * It is unclear in which cases we want to abort(403); and in which cases we want to return $this->emptyIcal();
-         * Both have advantages and disadvantages.
-         *
-         * TODO: the user authetification part should to moved to some middleware
-         */
-
-        if (!Input::has('user_id') || !Input::has('key') || !Input::has('req_key')) {
-            //abort(403);
-            return $this->emptyIcal();
-        }
-
-        $input_user_id = (String) Input::get('user_id');
-        $input_key = (String) Input::get('key');
-        $input_req_key = (String) Input::get('req_key');
-
-        if (strlen($input_user_id) < 20 || strlen($input_key) < 20 || strlen($input_req_key) < 3) {
-            //abort(403);
-            return $this->emptyIcal();
-        }
-
-        try {
-            $user = User::where('pseudo_id', '=', $input_user_id)->firstOrFail(['id', 'pseudo_id', 'pseudo_password', 'last_echo', 'first_name']);
-        } catch (ModelNotFoundException $e) {
-            //abort(403);
-            return $this->emptyIcal();
-        }
-
         $date_types = [];
-        if (Input::has('show_types') && is_array(Input::get('show_types')) && (count(Input::get('show_types')) > 0 )) {
-            $show_types = Input::get('show_types');
+        if (Request::has('show_types') && is_array(Request::input('show_types')) && (count(Request::input('show_types')) > 0 )) {
+            $show_types = Request::input('show_types');
 
             foreach (self::$date_types as $key => $value) {
                 // For now, we just ignore unknown elements from the GET-array.
@@ -295,26 +224,15 @@ class DateController extends Controller {
             }
         }
 
-        $generated_key = generate_calendar_password_hash($user, $input_req_key, array_keys($date_types));
-        if ($input_key !== $generated_key) {
-            //abort(403);
-            return $this->emptyIcal();
-        }
-
-        if (!$user->isActive()) {
-            // User was successfully authenticated, but is no longer allowed to sync a calendar. We purge their calendar.
-            return $this->emptyIcal();
-        }
-
-
         if (empty($date_types)) {
             // This handles subscriptions that were made through the 'link rel="alternate" type="text/calendar"'-attribute of our layout.
             // Specifying the date-types there is an option, but not a very good one
             $date_types = self::$date_types;
         }
 
+        $user = Auth::guard('calendarSync')->user();
         $calendar_id = $user->id . '_' . implode('-', array_keys($date_types));
-        $calendar_name = implode('-', array_keys($date_types)) . '_' . $user->pseudo_id;
+        $calendar_name = implode('-', array_keys($date_types)) . '_' . $user->id;
 
         // Only re-render every 4 hours to serve annoying clients slightly faster
         // Also, this makes it so the UIDs generated by Eluceo-iCal don't change on every request
@@ -331,11 +249,16 @@ class DateController extends Controller {
             }, array_keys($date_types)));
             $shortDescription = trans('date.ical_title', ['name' => $user->first_name, 'calendars' => $calendars_title_merge]);
 
-            $vCalendar = new \Eluceo\iCal\Component\Calendar('jazzchor_' . $calendar_name);
+            $vCalendar = new \Eluceo\iCal\Component\Calendar(config('app.domain') . '_' . $calendar_name);
             $vCalendar->setName($shortDescription);
             $vCalendar->setDescription($shortDescription);
+
             foreach ($dates as $date) {
-                $vEvent = new \Eluceo\iCal\Component\Event();
+                // Make sure uniqid are not freshly generated on every request. This makes syncing on clients more efficient.
+                $event_sync_id = 'date_ical_uniqid_' . $date->getShortName() . '-' . $date->id . '_user-' . $user->id;
+                $uniqid = md5(config('app.domain') . $event_sync_id) . '@' . config('app.domain');
+
+                $vEvent = new \Eluceo\iCal\Component\Event($uniqid);
                 $vEvent
                     ->setDtStart($date->getStart())
                     ->setDtEnd($date->getEnd())
@@ -343,7 +266,17 @@ class DateController extends Controller {
                     ->setSummary($date->getTitle())
                     ->setDescription($date->description);
 
+                // The sequence number determines if an event needs to be resynced. Since we don't keep track how often an event has changed,
+                // we simply use the unix timestamp of the modification date.
+                // Fun fact: This value will be too large for a regular iCal-integer on Tuesday, 19. January 2038 03:14:07 GMT
+                $sequence = $date->updated_at ? $date->updated_at->timestamp : null;
+
                 if (method_exists($date, 'isAttending')) {
+                    // If a user changes their attendance, we need to resync the event.
+                    if (null !== $date->getAttendance($user) && null !== $date->getAttendance($user)->updated_at) {
+                        $sequence = max($sequence, $date->getAttendance($user)->updated_at->timestamp);
+                    }
+
                     $attendance = $date->isAttending($user);
                     if (!empty($attendance)) {
                         $vEvent->setStatus(self::$convert_attendance_eluceo[$attendance]);
@@ -354,6 +287,19 @@ class DateController extends Controller {
                         }
                     }
                 }
+
+                // To make the sequence numbers a little smaller, we subtract the timestamp of our very first commit.
+                // Fun fact: After this, the resulting value will be too large for a regular iCal-integer after Wednesday, 5. April 2084 03:14:07 GMT
+                if ($sequence === null || $sequence < 1458259200) {
+                    $sequence = 0;
+                } else {
+                    $sequence -= 1458259200;
+                }
+
+                // This ensures that birthdays get resynced when they are shifted to a new year.
+                $sequence += $date->getStart()->year;
+
+                $vEvent->setSequence($sequence);
 
                 if (true === $date->hasPlace()) {
                     $vEvent->setLocation($date->place);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use \Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use MaddHatter\LaravelFullcalendar\IdentifiableEvent;
 
@@ -120,7 +121,7 @@ class Gig extends \Eloquent implements IdentifiableEvent {
      */
     public function getAttendance(User $user) {
         // Try saving the user's attendance in array for quicker access and no extra DB query.
-        if (!array_has($this->user_attendances, $user->id)) {
+        if (!Arr::has($this->user_attendances, $user->id)) {
             // We use the collection here, because it has a huge! impact on loading speed.
             $this->user_attendances[$user->id] = $this->gig_attendances->filter(
                 function ($value) use ($user) { return $value->user->id == $user->id; }

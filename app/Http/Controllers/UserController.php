@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Str;
 
 class UserController extends Controller {
     protected $validation = [
@@ -20,14 +21,15 @@ class UserController extends Controller {
         'voice_id'  => 'required|integer|min:0|exists:voices,id',
         'birthday'  => 'date|after:1900-01-01',
         'address_zip'   => 'integer',
-        'sheets_deposit_returned' => 'boolean'
+        'sheets_deposit_returned' => 'boolean',
+        'share_private_data' => 'boolean',
     ];
 
     protected $password_validation = [
         'password'    => 'required|min:8|custom_complexity:3',
     ];
 
-    protected $password_validation_update = [
+    protected $password_validation_own_update = [
         'password'    => 'required|min:8|custom_complexity:3|confirmed',
     ];
 
@@ -77,11 +79,11 @@ class UserController extends Controller {
         $voice_choice[1] = trans('user.no_voice');
 
         // Generate a random password until one satisfies our conditions
-        $random_password = str_random(10);
+        $random_password = Str::random(10);
         $v = \Validator::make(['password' => $random_password], $this->password_validation);
         for ($i = 0; $i < 30; $i++) { // max 30 times just in case
             if (!$v->passes()) {
-                $random_password = str_random(10);
+                $random_password = Str::random(10);
                 $v = \Validator::make(['password' => $random_password], $this->password_validation);
             } else {
                 break;
@@ -113,12 +115,12 @@ class UserController extends Controller {
             ]
         );
 
-        $data['password'] = bcrypt($data['password']);
-        $pseudo_password = str_random(222);
+        $data['password'] = bcrypt(\Arr::pull($data, 'password'));
+        $pseudo_password = Str::random(222);
 
         // Generate a pseudo_id which is unique
         for ($length = 20; $length <= 255; $length++) {
-            $pseudo_id = str_random($length);
+            $pseudo_id = Str::random($length);
             if (User::where('pseudo_id', '=', $pseudo_id)->count() === 0) {
                 // This is virtually guaranteed to succeed during the first loop
                 break;
@@ -129,6 +131,7 @@ class UserController extends Controller {
         }
 
         $user = new User($data);
+        $user->password = $hashed_password;
         $user->pseudo_id = $pseudo_id;
         $user->pseudo_password = $pseudo_password;
         $user->save();
@@ -221,21 +224,28 @@ class UserController extends Controller {
         $validation = $this->validation;
         $validation['email'] .= ',' . $user->id;
 
+        $hashed_password = null;
         if ($request->get('password') == '') {
             $this->validate($request, $validation);
-            $data = array_filter($request->except('password'));
+            $data = $request->except('password');
         } else {
-            $this->validate(
-                $request,
-                array_merge($validation, $this->password_validation_update)
-            );
+            if (\Auth::user()->id === $id) {
+                $validation = array_merge($validation, $this->password_validation_own_update);
+            } else {
+                $validation = array_merge($validation, $this->password_validation);
+            }
 
-            $data = array_filter($request->all());
-            $data['password'] = bcrypt($data['password']);
+            $this->validate($request, $validation);
+
+            $data = $request->all();
+            $hashed_password = bcrypt(\Arr::pull($data, 'password'));
         }
 
 
-        $user->update($data);
+        $user->fill($data);
+        if (!empty($hashed_password)) {
+            $user->password = $hashed_password;
+        }
         if(!$user->save()) {
             return redirect()->route('users.index')->withErrors([trans('user.update_failed')]);
         }
@@ -312,11 +322,11 @@ class UserController extends Controller {
     /*public function resetAllPasswords() {
         $users = User::all(['*'], true);
         foreach ($users as $user) {
-            $random_password = str_random(10);
+            $random_password = Str::random(10);
             $v = \Validator::make(['password' => $random_password], $this->password_validation);
             for ($i = 0; $i < 30; $i++) { // max 30 times just in case
                 if (!$v->passes()) {
-                    $random_password = str_random(10);
+                    $random_password = Str::random(10);
                     $v = \Validator::make(['password' => $random_password], $this->password_validation);
                 } else {
                     break;

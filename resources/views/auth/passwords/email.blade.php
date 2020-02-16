@@ -30,7 +30,7 @@
                             </div>
                         </div>
 
-                        {!! Recaptcha::render() !!}
+                        {!! ReCaptcha::htmlFormSnippet() !!}
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">
