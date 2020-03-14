@@ -6,7 +6,7 @@
     "type": "project",
     "repositories": [
         {
-            "type": "vcs",
+            "type": "github",
             "url": "https://github.com/rayblair06/laravel-fullcalendar"
         }
     ],
