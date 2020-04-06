@@ -217,7 +217,7 @@
 
 
         $(document).ready(function () {
-            var comment_form = $('#comment-form')
+            var comment_form = $('#comment-form');
 
             // On submission of the form in the modal.
             $(document).on("click", "#comment-form :submit", function (event) {
