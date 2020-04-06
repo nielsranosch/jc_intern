@@ -181,4 +181,12 @@ class RehearsalAttendanceController extends AttendanceController {
         // Update existing or create a new attendance.
         return (null !== RehearsalAttendance::updateOrCreate(['user_id' => $user->id, 'rehearsal_id' => $rehearsal->id], $data));
     }
+
+    protected function deleteComment($rehearsal, User $user)
+    {
+        return (null !== RehearsalAttendance::where([
+            ['user_id', $user->id],
+            ['rehearsal_id', $rehearsal->id]
+            ])->update(['comment' => null]));
+    }
 }

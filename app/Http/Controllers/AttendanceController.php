@@ -141,6 +141,26 @@ abstract class AttendanceController extends Controller {
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     private function changeUserEventAttendance(Request $request, $event, User $user, $attendance = null) {
+        // Check if the User hit the delete button
+        if ($request->filled('submit') && trans('form.delete') === $request->get('submit')){
+            if(!$this->deleteComment($event, $user)){
+                $message = trans('date.comment_delete_error');
+                if($request->wantsJson()){
+                    return \Response::json(['success' => false, 'message' => $message]);
+                }else{
+                    return back()->withErrors($message);
+                }
+            }
+            $message = trans('date.comment_delete_success');
+            if($request->wantsJson()){
+                return \Response::json(['success' => true, 'message' => $message]);
+            }else{
+                $request->session()->flash('message_success', $message);
+                return back();
+            }
+        }
+
+
         // Check if we have an attendance state given.
         if (null === $attendance) {
             if ($request->filled('attendance')) {
@@ -188,7 +208,10 @@ abstract class AttendanceController extends Controller {
             $message = 'yes' == $attendance ? trans('date.attendance_saved') : trans('date.excuse_saved');
         }
         if ($request->wantsJson()) {
-            return \Response::json(['success' => true, 'message' => $message]);
+            ob_start();
+            var_dump($request->all());
+            $vardum = ob_get_clean();
+            return \Response::json(['success' => true, 'message' => $message  ."<br />REQUEST=".$vardum]);
         } else {
             $request->session()->flash('message_success', $message);
             return back();
@@ -204,6 +227,12 @@ abstract class AttendanceController extends Controller {
      * @return bool
      */
     abstract protected function storeAttendance($event, User $user, array $data);
+
+    /**
+     * Helper to delete a comment.
+     * 
+     */
+    abstract protected function deleteComment($event, User $user);
 
     /**
      * This function simplifies the routing by choosing the appropriate controller and function to call.
