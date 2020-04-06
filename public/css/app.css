@@ -8254,6 +8254,11 @@ i.fa {
   background-color: #047823;
 }
 
+.btn-delete {
+  background-color: #e7280f;
+  border-bottom-color: #a01806;
+}
+
 .button-set-2d {
   background-color: #afafaf;
   display: inline-block;
