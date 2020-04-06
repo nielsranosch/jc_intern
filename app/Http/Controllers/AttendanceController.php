@@ -208,10 +208,7 @@ abstract class AttendanceController extends Controller {
             $message = 'yes' == $attendance ? trans('date.attendance_saved') : trans('date.excuse_saved');
         }
         if ($request->wantsJson()) {
-            ob_start();
-            var_dump($request->all());
-            $vardum = ob_get_clean();
-            return \Response::json(['success' => true, 'message' => $message  ."<br />REQUEST=".$vardum]);
+            return \Response::json(['success' => true, 'message' => $message]);
         } else {
             $request->session()->flash('message_success', $message);
             return back();
