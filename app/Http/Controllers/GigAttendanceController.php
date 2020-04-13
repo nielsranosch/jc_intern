@@ -71,4 +71,11 @@ class GigAttendanceController extends AttendanceController {
         // Update existing or create a new attendance.
         return (null !== GigAttendance::updateOrCreate(['user_id' => $user->id, 'gig_id' => $gig->id], $data));
     }
+
+    protected function deleteComment($gig, User $user){
+        return (null !== GigAttendance::where([
+            ['user_id', $user->id],
+            ['gig_id', $gig->id]
+            ])->update(['comment' => null]));
+    }
 }

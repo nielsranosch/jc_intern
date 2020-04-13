@@ -608,6 +608,11 @@ i.fa {
   }
 }
 
+.btn-delete{
+  background-color: $error-color;
+  border-bottom-color: $error-color-darker;
+}
+
 .button-set-2d {
   background-color: $grey-darker;
   display: inline-block;

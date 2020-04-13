@@ -37,6 +37,7 @@
                             <form id="comment-form" class="modal" style="display: none;">
                                 {!! Form::textInput2d('comment', null, ['placeholder' => trans('form.comment') ]) !!}
                                 {!! Form::submitInput2d(trans('form.submit')) !!}
+                                {!! Form::submitDelete2d(trans('form.delete')) !!}
                             </form>
                             @include('date.settings_bar', [
                                 'view_type'         => 'list',
@@ -83,7 +84,7 @@
                 url = $(sliderElement).data('attend-url');
                 attendance = 'yes';
             }
-            saveAttendance(url, null, function() {
+            saveAttendance(url, null, null, function() {
                     changeEventDisplayState(sliderElement, attendance, true);
                     $(sliderElement).removeClass('inactive');
                 });
@@ -97,14 +98,22 @@
          * @param comment
          * @param success_callback
          */
-        function saveAttendance(url, comment, success_callback) {
+        function saveAttendance(url, comment, submit, success_callback) {
             var data = {_token: '{{ csrf_token() }}'};
 
             if (undefined !== comment && null !== comment) {
                 data['comment'] = comment;
             }
 
-            // Request the url via post, include csrf-token and comment.
+            if(undefined !== submit && null !== submit) {
+                data['submit'] = submit;
+            }
+
+            if ('' === comment) {
+                data['submit'] = '{{ trans('form.delete')}}';
+            }
+
+            // Request the url via post, include csrf-token, comment and pressed button.
             $.post(url, data, function (reply) {
                 // Success?
                 if (reply.success) {
@@ -211,12 +220,13 @@
             var comment_form = $('#comment-form');
 
             // On submission of the form in the modal.
-            comment_form.submit(function (event) {
+            $(document).on("click", "#comment-form :submit", function (event) {
                 event.preventDefault();
-
                 // TODO: Save comment to your_comment section and data-current-comment of appropriate buttons
-                saveAttendance($(this).attr('action'),
-                    $('#comment').val()
+
+                saveAttendance(comment_form.attr('action'),
+                    $('#comment').val(),
+                    $(this).val()
                 );
 
                 $.modal.close();
@@ -235,6 +245,7 @@
 
                 saveAttendance(
                     $(this).data('url'),
+                    null,
                     null,
                     function() {
                         changeEventDisplayState(button, $(button).data('attendance'), false);
