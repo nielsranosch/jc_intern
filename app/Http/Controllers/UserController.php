@@ -7,10 +7,10 @@ use App\Models\Rehearsal;
 use App\Models\Semester;
 use App\Models\Voice;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // as HttpRequest;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request as InputRequest;
 use Illuminate\Support\Str;
 
 class UserController extends Controller {
@@ -65,8 +65,8 @@ class UserController extends Controller {
     public function create() {
         $voice = null;
 
-        if (Input::has('voice')) {
-            $voice = Input::get('voice');
+        if (InputRequest::has('voice')) {
+            $voice = InputRequest::input('voice');
 
             $voiceModel = Voice::find($voice);
             while (null !== $voiceModel && !$voiceModel->child_group) {
