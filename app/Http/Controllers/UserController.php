@@ -115,7 +115,7 @@ class UserController extends Controller {
             ]
         );
 
-        $data['password'] = bcrypt(\Arr::pull($data, 'password'));
+        $hashed_password = bcrypt(\Arr::pull($data, 'password'));
         $pseudo_password = Str::random(222);
 
         // Generate a pseudo_id which is unique
