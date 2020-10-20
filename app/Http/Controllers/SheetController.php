@@ -6,8 +6,8 @@ use App\Models\Sheet;
 use App\Models\User;
 use App\Models\Voice;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request; // as InputRequest;
+use Illuminate\Http\Request as HttpRequest;
 
 class SheetController extends Controller
 {
@@ -34,7 +34,7 @@ class SheetController extends Controller
         return view('sheet.create');
     }
 
-    public function store(Request $request){
+    public function store(HttpRequest $request){
         $this->validate($request, Sheet::$rules);
         $sheet = Sheet::create($request->only(['label', 'amount']));
         $sheet->save();
@@ -64,10 +64,10 @@ class SheetController extends Controller
 
     public function processDistribute($id){
         $sheet = Sheet::findOrFail($id);
-        if (!Input::has('users')){
+        if (!Request::has('users')){
             return response()->redirectToAction('SheetController@distribute', ['id' => $sheet->id])->withErrors(['no input']);
         }
-        $userIds = Input::get('users');
+        $userIds = Request::input('users');
         $users = User::findMany($userIds);
         if ($users->count() == 0){
             return response()->redirectToAction('SheetController@distribute', ['id' => $sheet->id])->withErrors(['no users']);
@@ -120,14 +120,14 @@ class SheetController extends Controller
     }
 
     public function ajaxUpdate($id){
-        if (!Input::has('borrowed')){
+        if (!Request::has('borrowed')){
             return response()->json(['error' => 'wrong_input', 'message' => trans('form.error_arbitrary')], 500);
         }
 
-        $names = explode(" ", Input::get('borrowed'));
+        $names = explode(" ", Request::input('borrowed'));
 
         if (count($names)!=2){
-            return response()->json(['error' => 'user_not_found', 'message' => trans('form.error_user_not_found', ['name' => Input::get('borrowed')])], 500);
+            return response()->json(['error' => 'user_not_found', 'message' => trans('form.error_user_not_found', ['name' => Request::input('borrowed')])], 500);
         }
 
         $firstname = $names[0];
@@ -136,7 +136,7 @@ class SheetController extends Controller
         $user  = User::whereFirstName($firstname)->whereLastName($lastname)->first();
 
         if (!$user){
-            return response()->json(['error' => 'user_not_found', 'message' => trans('form.error_user_not_found', ['name' => Input::get('borrowed')])], 500);
+            return response()->json(['error' => 'user_not_found', 'message' => trans('form.error_user_not_found', ['name' => Request::input('borrowed')])], 500);
         }
 
         $sheet = Sheet::find($id);
@@ -224,22 +224,22 @@ class SheetController extends Controller
         $oldStatus = $oldUser->pivot->status;
         $oldNumber = $oldUser->pivot->number;
 
-        if (!Input::has('userid') || !Input::has('status') || !Input::has('number')){
+        if (!Request::has('userid') || !Request::has('status') || !Request::has('number')){
             return response()->json(['error' => 'wrong_input', 'message' => trans('form.error_arbitrary')], 500);
         }
 
-        $status = Input::get('status');
+        $status = Request::input('status');
         if (!in_array($status, Sheet::$statuses)){
             return response()->json(['error' => 'invalid_status', 'message' => trans('form.error_status', ['status' => $status])], 500);
         }
 
-        $number = Input::get('number');
+        $number = Request::input('number');
         if ($number != $oldNumber && $sheet->numberExists($number, $oldNumber)){
             return response()->json(['error' => 'double_number', 'message' => trans('form.error_double_number', ['number' => $number])], 500);
         }
 
 
-        $userid = Input::get('userid');
+        $userid = Request::input('userid');
         $user  = User::find($userid);
 
         if (!$user){
